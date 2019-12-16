@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head> </head>
+
+<body style="height: 100%;">
+<script src="./leaflet/leaflet.js"></script>
+<link rel="stylesheet" href="./leaflet/leaflet.css" />
+<script src="./leaflet/ChineseTmsProviders.js"></script>
+
+<style>
+      #mapDiv {
+        height: 100%;
+        width: 100%;
+      }
+      *,
+      body,
+      html,
+      div,
+      p,
+      img {
+        border: 0;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+<div id="mapDiv"></div>
+
+<script>
+      //
+      function connectWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+          callback(WebViewJavascriptBridge);
+        } else {
+          document.addEventListener(
+            "WebViewJavascriptBridgeReady",
+            function() {
+              callback(WebViewJavascriptBridge);
+            },
+            false
+          );
+        }
+      }
+
+      //
+      connectWebViewJavascriptBridge(function(bridge) {
+        bridge.init(function(message, responseCallback) {
+          var data = { "javascript response": "helloworld" };
+          responseCallback(data);
+        });
+
+        
+      });
+
+      //创建天地图影像图层
+      var tdtNormalMap = L.tileLayer.chinaProvider("TianDiTu.Normal.Map", {
+        maxZoom: 18,
+        minZoom: 1
+      });
+      //创建天地图路网图层
+      var tdtNormalAnnotion = L.tileLayer.chinaProvider("TianDiTu.Normal.Annotion", {
+        maxZoom: 18,
+        minZoom: 1
+      });
+      //江影像和路网图层添加到地图上
+      var map = L.map("mapDiv", {
+        center: [41.8, 123.43],
+        zoom: 7,
+        layers: [tdtNormalMap, tdtNormalAnnotion],
+        zoomControl: false
+      });
+      
+
+      
+
+      //注册地图 缩放 拖动的 监听事件
+      map.on("zoomend", function(e) {
+      });
+
+      map.on("moveend", function(e) {
+      });
+      map.on("click", function(e) {
+        onMapClick(e.latlng.lng, e.latlng.lat);
+      });
+
+      
+
+      //
+      function zoomTo(south, west, north, east) {
+        var southWest = L.latLng(south, west);
+        var northEast = L.latLng(north, east);
+        var bounds = L.latLngBounds(southWest, northEast);
+        map.fitBounds(bounds);
+      }
+
+      
+      //显示定位标志
+      var locationMarker = null;
+      function showLocationMarker(lng, lat) {
+        if (locationMarker != null) {
+          map.removeLayer(locationMarker);
+        }
+        var locationIcon = L.icon({
+          iconUrl: "./images/ic_location_curr.png",
+          iconSize: [20, 20]
+        });
+        locationMarker = L.marker([lat, lng], { icon: locationIcon }).addTo(
+          map
+        );
+      }
+
+      // -------------------------------------method in android--------------------------------------
+      function onMapClick(lng, lat) {
+        var pramasJson = {};
+        pramasJson.lng = lng;
+        pramasJson.lat = lat;
+        window.WebViewJavascriptBridge.callHandler(
+          "onMapClick",
+          pramasJson,
+          function(responseData) {}
+        );
+      }
+    </script>
+</body>
+</html>
