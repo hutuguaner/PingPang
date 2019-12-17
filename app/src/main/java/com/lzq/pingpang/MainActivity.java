@@ -2,7 +2,9 @@ package com.lzq.pingpang;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 
@@ -13,9 +15,14 @@ import com.github.lzyzsd.jsbridge.CallBackFunction;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.URI;
+
 public class MainActivity extends AppCompatActivity {
 
     private BridgeWebView bridgeWebView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,28 @@ public class MainActivity extends AppCompatActivity {
         bridgeWebView.loadUrl("file:///android_asset/mymap.html");
         registerJavascriptHandler();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    hehe();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
+
+
+    private void hehe() throws Exception {
+        Socket socket = new Socket("192.168.1.174", 8091);
+        MyWriteThread myWriteThread = new MyWriteThread(socket);
+        myWriteThread.start();
+        MyReadThread myReadThread = new MyReadThread(socket);
+        myReadThread.start();
+    }
+
 
     //注冊 javascript handler
     private void registerJavascriptHandler() {
