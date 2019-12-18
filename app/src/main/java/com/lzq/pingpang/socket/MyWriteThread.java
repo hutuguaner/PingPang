@@ -1,4 +1,4 @@
-package com.lzq.pingpang;
+package com.lzq.pingpang.socket;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;

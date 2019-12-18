@@ -2,24 +2,22 @@ package com.lzq.pingpang;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 
 import com.github.lzyzsd.jsbridge.BridgeHandler;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
+import com.lzq.pingpang.socket.MyReadThread;
+import com.lzq.pingpang.socket.MyWriteThread;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.Socket;
-import java.net.URI;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private BridgeWebView bridgeWebView;
 

@@ -1,4 +1,4 @@
-package com.lzq.pingpang;
+package com.lzq.pingpang.socket;
 
 import android.util.Log;
 
