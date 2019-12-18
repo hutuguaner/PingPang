@@ -5,12 +5,27 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.lzq.pingpang"
-        minSdkVersion 24
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        debug {
+            keyAlias 'key0'
+            keyPassword '000000'
+            storeFile file('D:\\AndroidStudioProjects\\PingPang\\keystore.jks')
+            storePassword '000000'
+        }
+        release {
+            keyAlias 'key0'
+            keyPassword '000000'
+            storeFile file('D:\\AndroidStudioProjects\\PingPang\\keystore.jks')
+            storePassword '000000'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false

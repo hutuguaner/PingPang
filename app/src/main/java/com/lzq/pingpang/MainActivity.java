@@ -1,5 +1,6 @@
 package com.lzq.pingpang;
 
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.lzq.pingpang.socket.MyReadThread;
 import com.lzq.pingpang.socket.MyWriteThread;
+import com.lzq.pingpang.socket.ReadWriteThread;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,11 +53,9 @@ public class MainActivity extends BaseActivity {
 
 
     private void hehe() throws Exception {
-        Socket socket = new Socket("192.168.1.174", 8091);
-        MyWriteThread myWriteThread = new MyWriteThread(socket);
-        myWriteThread.start();
-        MyReadThread myReadThread = new MyReadThread(socket);
-        myReadThread.start();
+        Socket socket = new Socket("192.168.1.4", 8091);
+        ReadWriteThread readWriteThread = new ReadWriteThread(socket);
+        readWriteThread.start();
     }
 
 
