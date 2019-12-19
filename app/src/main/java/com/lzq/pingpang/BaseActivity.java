@@ -51,13 +51,11 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         if (loadingDialog.isShowing()) {
-            Log.i("hehe"," isshowing");
             if (integerStack == null) {
                 integerStack = new Stack<>();
             }
             integerStack.push(0);
         } else {
-            Log.i("hehe"," is not showing");
             loadingDialog.show();
         }
 
@@ -69,10 +67,8 @@ public class BaseActivity extends AppCompatActivity {
             integerStack = new Stack<>();
         }
         if (!integerStack.empty()) {
-            Log.i("hehe","stack not null");
             integerStack.pop();
         } else {
-            Log.i("hehe","stack null");
             if (loadingDialog != null && loadingDialog.isShowing()) {
                 loadingDialog.dismiss();
             }

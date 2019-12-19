@@ -3,9 +3,13 @@ package com.lzq.pingpang;
 import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
+import android.widget.Toast;
 
 import com.github.lzyzsd.jsbridge.BridgeHandler;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
@@ -18,12 +22,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.Socket;
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
     private BridgeWebView bridgeWebView;
+    Location location;
 
-
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +44,21 @@ public class MainActivity extends BaseActivity {
         bridgeWebView.loadUrl("file:///android_asset/mymap.html");
         registerJavascriptHandler();
 
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        List<String> providerList = locationManager.getProviders(true);
+        String provider;
+        if (providerList.contains(LocationManager.GPS_PROVIDER)) {
+            provider = LocationManager.GPS_PROVIDER;
+        }else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Toast.makeText(this, "No location provider to use",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        location = locationManager.getLastKnownLocation(provider);
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -49,12 +70,21 @@ public class MainActivity extends BaseActivity {
             }
         }).start();
 
+
     }
 
 
     private void hehe() throws Exception {
-        Socket socket = new Socket("192.168.1.4", 8091);
+        Socket socket = new Socket("192.168.1.174", 8091);
         ReadWriteThread readWriteThread = new ReadWriteThread(socket);
+        if(location==null){
+            readWriteThread.setLat("39.978437");
+            readWriteThread.setLng("116.377823");
+        }else{
+            readWriteThread.setLat(Double.toString(location.getLatitude()));
+            readWriteThread.setLng(Double.toString(location.getLongitude()));
+        }
+
         readWriteThread.start();
     }
 
