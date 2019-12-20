@@ -67,6 +67,7 @@ public class ReadWriteThread extends Thread {
     public void run() {
         try {
             this.server = new Socket("129.28.189.31", 8091);
+            //this.server = new Socket("192.168.1.4", 8091);
             bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
 
