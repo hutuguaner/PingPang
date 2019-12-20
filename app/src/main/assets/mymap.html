@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" style="height: 100%;">
-<head> </head>
+  <head> </head>
 
-<body style="height: 100%;">
-<script src="./leaflet/leaflet.js"></script>
-<link rel="stylesheet" href="./leaflet/leaflet.css" />
-<script src="./leaflet/ChineseTmsProviders.js"></script>
+  <body style="height: 100%;">
+    <script src="./leaflet/leaflet.js"></script>
+    <link rel="stylesheet" href="./leaflet/leaflet.css" />
+    <script src="./leaflet/ChineseTmsProviders.js"></script>
 
-<style>
+    <style>
       #mapDiv {
         height: 100%;
         width: 100%;
@@ -23,9 +23,9 @@
         padding: 0;
       }
     </style>
-<div id="mapDiv"></div>
+    <div id="mapDiv"></div>
 
-<script>
+    <script>
       //
       function connectWebViewJavascriptBridge(callback) {
         if (window.WebViewJavascriptBridge) {
@@ -48,7 +48,25 @@
           responseCallback(data);
         });
 
-        
+        bridge.registerHandler("addClientMarkerOnMap", function(
+          data,
+          responseCallback
+        ) {
+          var pramasJson = JSON.parse(data);
+          var token = pramasJson.token;
+          var lat = pramasJson.lat;
+          var lng = pramasJson.lng;
+          addClientMarkerOnMap(token,lat,lng);
+        });
+
+        bridge.registerHandler("removeClientMarkerFromMap", function(
+          data,
+          responseCallback
+        ) {
+          var pramasJson = JSON.parse(data);
+          var token = pramasJson.token;
+          removeClientMarkerFromMap(token);
+        });
       });
 
       //创建天地图影像图层
@@ -57,10 +75,13 @@
         minZoom: 1
       });
       //创建天地图路网图层
-      var tdtNormalAnnotion = L.tileLayer.chinaProvider("TianDiTu.Normal.Annotion", {
-        maxZoom: 18,
-        minZoom: 1
-      });
+      var tdtNormalAnnotion = L.tileLayer.chinaProvider(
+        "TianDiTu.Normal.Annotion",
+        {
+          maxZoom: 18,
+          minZoom: 1
+        }
+      );
       //江影像和路网图层添加到地图上
       var map = L.map("mapDiv", {
         center: [41.8, 123.43],
@@ -68,21 +89,14 @@
         layers: [tdtNormalMap, tdtNormalAnnotion],
         zoomControl: false
       });
-      
-
-      
 
       //注册地图 缩放 拖动的 监听事件
-      map.on("zoomend", function(e) {
-      });
+      map.on("zoomend", function(e) {});
 
-      map.on("moveend", function(e) {
-      });
+      map.on("moveend", function(e) {});
       map.on("click", function(e) {
         onMapClick(e.latlng.lng, e.latlng.lat);
       });
-
-      
 
       //
       function zoomTo(south, west, north, east) {
@@ -92,7 +106,6 @@
         map.fitBounds(bounds);
       }
 
-      
       //显示定位标志
       var locationMarker = null;
       function showLocationMarker(lng, lat) {
@@ -108,6 +121,24 @@
         );
       }
 
+      //添加client marker
+      var clientMarkers = {};
+      var clientMarkerIcon = L.icon({
+        iconUrl: "./leaflet/images/ic_blackman.png",
+        iconSize: [20, 20]
+      });
+      function addClientMarkerOnMap(token, lat, lng) {
+        var clientMarker = L.marker([lat, lng], {
+          icon: clientMarkerIcon
+        }).addTo(map);
+        var key = token;
+        clientMarkers[key] = clientMarker;
+      }
+      //移除 client marker
+      function removeClientMarkerFromMap(token) {
+        map.removeLayer(clientMarkers[token]);
+        delete(clientMarkers[token])
+      }
       // -------------------------------------method in android--------------------------------------
       function onMapClick(lng, lat) {
         var pramasJson = {};
@@ -120,5 +151,5 @@
         );
       }
     </script>
-</body>
+  </body>
 </html>

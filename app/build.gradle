@@ -50,5 +50,6 @@ dependencies {
     implementation 'com.lzy.net:okgo:3.0.4'
 
     implementation 'com.blankj:utilcodex:1.26.0'
+    implementation project(path: ':fastjson-1.2.62')
 
 }

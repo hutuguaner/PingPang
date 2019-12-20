@@ -1,6 +1,12 @@
 package com.lzq.pingpang.socket;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.GsonUtils;
 import com.blankj.utilcode.util.SPUtils;
@@ -26,8 +32,8 @@ public class ReadWriteThread extends Thread {
 
     private Socket server;
 
-    public ReadWriteThread(Socket server) {
-        this.server = server;
+
+    public ReadWriteThread(String lat,String lng) {
         msgBeanQueue = new LinkedList<>();
 
         MsgBean msgBean = new MsgBean();
@@ -51,34 +57,40 @@ public class ReadWriteThread extends Thread {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    private String lat;
-    private String lng;
 
     private Queue<MsgBean> msgBeanQueue;
+
+    private Handler handler;
 
 
     @Override
     public void run() {
-        super.run();
         try {
+            this.server = new Socket("129.28.189.31", 8091);
             bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
 
             String readline = null;
+
             while (true) {
                 MsgBean msgBean = msgBeanQueue.poll();
-                if(msgBean!=null){
+                if (msgBean != null) {
                     bufferedWriter.write(GsonUtils.toJson(msgBean) + "\n");
                     bufferedWriter.flush();
-                }else{
+                } else {
                     bufferedWriter.write("\n");
                     bufferedWriter.flush();
                 }
 
                 readline = bufferedReader.readLine();
-                if (readline != null&&!readline.trim().equals("")) {
-                    Log.i("hehe", " 客户端收到： " + readline);
-                }else{
+                if (readline != null && !readline.trim().equals("")) {
+                    if (handler != null) {
+                        Message message = Message.obtain();
+                        message.obj = readline;
+                        handler.sendMessage(message);
+                    } else {
+                    }
+                } else {
                     //Log.i("hehe", " 客户端收到： null");
                 }
                 Thread.sleep(1000);
@@ -92,19 +104,18 @@ public class ReadWriteThread extends Thread {
         }
     }
 
-    public String getLat() {
-        return lat;
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
-    public void setLat(String lat) {
-        this.lat = lat;
+    public void addMsg(MsgBean msgBean) {
+        if (msgBeanQueue != null)
+            msgBeanQueue.offer(msgBean);
     }
 
-    public String getLng() {
-        return lng;
+    public void clearMsg() {
+        if (msgBeanQueue != null)
+            msgBeanQueue.clear();
     }
 
-    public void setLng(String lng) {
-        this.lng = lng;
-    }
 }

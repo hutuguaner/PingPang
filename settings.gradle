@@ -1,2 +1,2 @@
-include ':app', ':utilcode'
+include ':app', ':utilcode', ':fastjson-1.2.62'
 rootProject.name='PingPang'
